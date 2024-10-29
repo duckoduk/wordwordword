@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fill in the Blanks Quiz</title>
+    <style>
+        .progress-bar {
+            width: 100%;
+            background-color: #f3f3f3;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .progress-bar-fill {
+            height: 20px;
+            width: 0;
+            background-color: #4caf50;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Fill in the Blanks Quiz</h1>
+    <div id="progress-text"></div>
+    <div class="progress-bar">
+        <div id="progress-bar-fill" class="progress-bar-fill"></div>
+    </div>
+    <div id="question"></div>
+    <input type="text" id="answer" placeholder="Type your answer here">
+    <button onclick="submitAnswer()">Submit</button>
+    <div id="feedback"></div>
+
+    <script>
+        const questions = [
+            { sentence: "I have a ___ car.", answer: "new" },
+            { sentence: "She is reading a ___ book.", answer: "good" },
+            { sentence: "They went to the ___ yesterday.", answer: "park" },
+            { sentence: "He wants to be a ___ teacher.", answer: "math" },
+            { sentence: "The weather is ___ today.", answer: "nice" }
+        ];
+        let questionQueue = [...questions];
+        let correctAnswers = 0;
+        let totalQuestions = questions.length;
+
+        function getRandomQuestion() {
+            if (questionQueue.length === 0) {
+                document.getElementById("question").innerText = "Quiz completed! Well done!";
+                document.getElementById("answer").style.display = "none";
+                document.querySelector("button").style.display = "none";
+                return;
+            }
+            const randomIndex = Math.floor(Math.random() * questionQueue.length);
+            return questionQueue[randomIndex];
+        }
+
+        function updateProgress() {
+            document.getElementById("progress-text").innerText = `Correct: ${correctAnswers} / ${totalQuestions}`;
+            const progressPercentage = (correctAnswers / totalQuestions) * 100;
+            document.getElementById("progress-bar-fill").style.width = `${progressPercentage}%`;
+        }
+
+        function displayQuestion() {
+            const question = getRandomQuestion();
+            document.getElementById("question").innerText = question.sentence;
+        }
+
+        function submitAnswer() {
+            const userAnswer = document.getElementById("answer").value.trim().toLowerCase();
+            const currentQuestion = questions.find(q => q.sentence === document.getElementById("question").innerText);
+
+            if (userAnswer === currentQuestion.answer.toLowerCase()) {
+                correctAnswers++;
+                questionQueue = questionQueue.filter(q => q.sentence !== currentQuestion.sentence);
+                document.getElementById("feedback").innerText = "Correct!";
+            } else {
+                document.getElementById("feedback").innerText = `Wrong! The correct answer was: ${currentQuestion.answer}`;
+            }
+            updateProgress();
+            document.getElementById("answer").value = "";
+            setTimeout(() => {
+                document.getElementById("feedback").innerText = "";
+                displayQuestion();
+            }, 1500);
+        }
+
+        // Initialize the quiz
+        updateProgress();
+        displayQuestion();
+    </script>
+</body>
+</html>
