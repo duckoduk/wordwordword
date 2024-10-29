@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="kor">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -77,8 +77,10 @@
         <h1>Fill in the Blanks Quiz</h1>
         <h3>Select Chapters:</h3>
         <label><input type="checkbox" name="chapter" value="31"> Chapter 31</label>
-        <label><input type="checkbox" name="chapter" value="2"> Chapter 2</label>
-        <label><input type="checkbox" name="chapter" value="3"> Chapter 3</label>
+        <label><input type="checkbox" name="chapter" value="32"> Chapter 32</label>
+        <label><input type="checkbox" name="chapter" value="33"> Chapter 33</label>
+        <label><input type="checkbox" name="chapter" value="34"> Chapter 34</label>
+        <label><input type="checkbox" name="chapter" value="35"> Chapter 35</label>
         <button onclick="startQuiz()">Start Quiz</button>
     </div>
     <div id="quiz-section" style="display:none;">
@@ -87,6 +89,7 @@
             <div id="progress-bar-fill" class="progress-bar-fill"></div>
         </div>
         <div id="question"></div>
+        <div id="translation" style="margin-bottom: 10px;"></div>
         <input type="text" id="answer" placeholder="Type your answer here" onkeydown="if (event.key === 'Enter') submitAnswer()">
         <button onclick="submitAnswer()">Submit</button>
         <div id="feedback"></div>
@@ -111,7 +114,7 @@
                 return response.text();
             }));
             Promise.all(promises).then(data => {
-                questionQueue = data.flatMap(csv => parseCSV(csv)).filter(q => q.sentence && q.answer);
+                questionQueue = data.flatMap(csv => parseCSV(csv)).filter(q => q.sentence && q.translation && q.answer);
                 totalQuestions = questionQueue.length;
 
                 if (totalQuestions === 0) {
@@ -132,11 +135,14 @@
         function parseCSV(csv) {
             const lines = csv.split('\n');
             return lines.map(line => {
-                const lastCommaIndex = line.lastIndexOf(',');
-                const sentence = line.slice(0, lastCommaIndex).trim();
-                const answer = line.slice(lastCommaIndex + 1).trim();
-                if (sentence && answer) {
-                    return { sentence, answer };
+                const lastSlashIndex = line.lastIndexOf('/');
+                const sentenceAndTranslation = line.slice(0, lastSlashIndex).trim();
+                const answer = line.slice(lastSlashIndex + 1).trim();
+                const lastSentenceSlashIndex = sentenceAndTranslation.lastIndexOf('/');
+                const sentence = sentenceAndTranslation.slice(0, lastSentenceSlashIndex).trim();
+                const translation = sentenceAndTranslation.slice(lastSentenceSlashIndex + 1).trim();
+                if (sentence && translation && answer) {
+                    return { sentence, translation, answer };
                 }
                 return null;
             }).filter(q => q !== null);
@@ -163,6 +169,7 @@
             const question = getRandomQuestion();
             if (question) {
                 document.getElementById("question").innerText = question.sentence;
+                document.getElementById("translation").innerText = question.translation;
             }
         }
 
