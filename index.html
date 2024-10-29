@@ -4,51 +4,150 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Fill in the Blanks Quiz</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f0f2f5;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        h1 {
+            color: #4caf50;
+        }
+        #chapter-selection, #quiz-section {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            max-width: 500px;
+            width: 100%;
+        }
+        button {
+            background-color: #4caf50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        label {
+            display: block;
+            margin-bottom: 10px;
+        }
+        #progress-text {
+            margin-bottom: 10px;
+        }
         .progress-bar {
             width: 100%;
-            background-color: #f3f3f3;
-            border: 1px solid #ccc;
-            border-radius: 5px;
+            background-color: #e0e0e0;
+            border-radius: 10px;
+            overflow: hidden;
             margin-bottom: 20px;
         }
         .progress-bar-fill {
             height: 20px;
             width: 0;
             background-color: #4caf50;
+            transition: width 0.4s ease;
+        }
+        input[type="text"] {
+            width: calc(100% - 22px);
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
             border-radius: 5px;
+        }
+        #feedback {
+            margin-top: 10px;
+            font-weight: bold;
         }
     </style>
 </head>
 <body>
-    <h1>Fill in the Blanks Quiz</h1>
-    <div id="progress-text"></div>
-    <div class="progress-bar">
-        <div id="progress-bar-fill" class="progress-bar-fill"></div>
+    <div id="chapter-selection">
+        <h1>Fill in the Blanks Quiz</h1>
+        <h3>Select Chapters:</h3>
+        <label><input type="checkbox" name="chapter" value="1"> Chapter 1</label>
+        <label><input type="checkbox" name="chapter" value="2"> Chapter 2</label>
+        <label><input type="checkbox" name="chapter" value="3"> Chapter 3</label>
+        <!-- <label><input type="checkbox" name="chapter" value="4"> Chapter 4</label>
+        <label><input type="checkbox" name="chapter" value="5"> Chapter 5</label> -->
+        <button onclick="startQuiz()">Start Quiz</button>
     </div>
-    <div id="question"></div>
-    <input type="text" id="answer" placeholder="Type your answer here">
-    <button onclick="submitAnswer()">Submit</button>
-    <div id="feedback"></div>
+    <div id="quiz-section" style="display:none;">
+        <div id="progress-text"></div>
+        <div class="progress-bar">
+            <div id="progress-bar-fill" class="progress-bar-fill"></div>
+        </div>
+        <div id="question"></div>
+        <input type="text" id="answer" placeholder="Type your answer here" onkeydown="if (event.key === 'Enter') submitAnswer()">
+        <button onclick="submitAnswer()">Submit</button>
+        <div id="feedback"></div>
+    </div>
 
     <script>
-        const questions = [
-            { sentence: "I have a ___ car.", answer: "new" },
-            { sentence: "She is reading a ___ book.", answer: "good" },
-            { sentence: "They went to the ___ yesterday.", answer: "park" },
-            { sentence: "He wants to be a ___ teacher.", answer: "math" },
-            { sentence: "The weather is ___ today.", answer: "nice" }
-        ];
-        let questionQueue = [...questions];
+        let questionQueue = [];
         let correctAnswers = 0;
-        let totalQuestions = questions.length;
+        let totalQuestions = 0;
+
+        function startQuiz() {
+            const selectedChapters = Array.from(document.querySelectorAll('input[name="chapter"]:checked')).map(cb => parseInt(cb.value));
+            loadQuestions(selectedChapters);
+        }
+
+        function loadQuestions(selectedChapters) {
+            const promises = selectedChapters.map(chapter => fetch(`chapter${chapter}.csv`).then(response => {
+                if (!response.ok) {
+                    console.warn(`Failed to load chapter ${chapter}.`);
+                    return '';
+                }
+                return response.text();
+            }));
+            Promise.all(promises).then(data => {
+                questionQueue = data.flatMap(csv => parseCSV(csv)).filter(q => q.sentence && q.answer);
+                totalQuestions = questionQueue.length;
+
+                if (totalQuestions === 0) {
+                    alert("Please select at least one chapter to start the quiz.");
+                    return;
+                }
+
+                document.getElementById("quiz-section").style.display = "block";
+                document.getElementById("chapter-selection").style.display = "none";
+                updateProgress();
+                displayQuestion();
+            }).catch(error => {
+                alert("An error occurred while loading questions. Please try again.");
+                console.error(error);
+            });
+        }
+
+        function parseCSV(csv) {
+            const lines = csv.split('\n');
+            return lines.map(line => {
+                const [sentence, answer] = line.split(',');
+                if (sentence && answer) {
+                    return { sentence: sentence.trim(), answer: answer.trim() };
+                }
+                return null;
+            }).filter(q => q !== null);
+        }
 
         function getRandomQuestion() {
             if (questionQueue.length === 0) {
                 document.getElementById("question").innerText = "Quiz completed! Well done!";
                 document.getElementById("answer").style.display = "none";
                 document.querySelector("button").style.display = "none";
-                return;
+                return null;
             }
             const randomIndex = Math.floor(Math.random() * questionQueue.length);
             return questionQueue[randomIndex];
@@ -62,12 +161,14 @@
 
         function displayQuestion() {
             const question = getRandomQuestion();
-            document.getElementById("question").innerText = question.sentence;
+            if (question) {
+                document.getElementById("question").innerText = question.sentence;
+            }
         }
 
         function submitAnswer() {
             const userAnswer = document.getElementById("answer").value.trim().toLowerCase();
-            const currentQuestion = questions.find(q => q.sentence === document.getElementById("question").innerText);
+            const currentQuestion = questionQueue.find(q => q.sentence === document.getElementById("question").innerText);
 
             if (userAnswer === currentQuestion.answer.toLowerCase()) {
                 correctAnswers++;
@@ -83,10 +184,6 @@
                 displayQuestion();
             }, 1500);
         }
-
-        // Initialize the quiz
-        updateProgress();
-        displayQuestion();
     </script>
 </body>
 </html>
