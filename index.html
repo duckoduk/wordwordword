@@ -79,8 +79,8 @@
         <label><input type="checkbox" name="chapter" value="1"> Chapter 1</label>
         <label><input type="checkbox" name="chapter" value="2"> Chapter 2</label>
         <label><input type="checkbox" name="chapter" value="3"> Chapter 3</label>
-        <!-- <label><input type="checkbox" name="chapter" value="4"> Chapter 4</label>
-        <label><input type="checkbox" name="chapter" value="5"> Chapter 5</label> -->
+        <label><input type="checkbox" name="chapter" value="4"> Chapter 4</label>
+        <label><input type="checkbox" name="chapter" value="5"> Chapter 5</label>
         <button onclick="startQuiz()">Start Quiz</button>
     </div>
     <div id="quiz-section" style="display:none;">
@@ -134,9 +134,11 @@
         function parseCSV(csv) {
             const lines = csv.split('\n');
             return lines.map(line => {
-                const [sentence, answer] = line.split(',');
+                const lastCommaIndex = line.lastIndexOf(',');
+                const sentence = line.slice(0, lastCommaIndex).trim();
+                const answer = line.slice(lastCommaIndex + 1).trim();
                 if (sentence && answer) {
-                    return { sentence: sentence.trim(), answer: answer.trim() };
+                    return { sentence, answer };
                 }
                 return null;
             }).filter(q => q !== null);
