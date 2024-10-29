@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="kor">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -70,6 +70,10 @@
             margin-top: 10px;
             font-weight: bold;
         }
+        #return-button {
+            margin-top: 20px;
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -80,7 +84,7 @@
         <label><input type="checkbox" name="chapter" value="32"> Chapter 32</label>
         <label><input type="checkbox" name="chapter" value="33"> Chapter 33</label>
         <label><input type="checkbox" name="chapter" value="34"> Chapter 34</label>
-        <label><input type="checkbox" name="chapter" value="35"> Chapter 35</label>
+        <label><input type="checkbox" name="chapter" value="40"> Chapter 40</label>
         <button onclick="startQuiz()">Start Quiz</button>
     </div>
     <div id="quiz-section" style="display:none;">
@@ -93,6 +97,7 @@
         <input type="text" id="answer" placeholder="Type your answer here" onkeydown="if (event.key === 'Enter') submitAnswer()">
         <button onclick="submitAnswer()">Submit</button>
         <div id="feedback"></div>
+        <button id="return-button" onclick="returnToMain()">Return to Main Menu</button>
     </div>
 
     <script>
@@ -151,8 +156,10 @@
         function getRandomQuestion() {
             if (questionQueue.length === 0) {
                 document.getElementById("question").innerText = "Quiz completed! Well done!";
+                document.getElementById("translation").innerText = "";
                 document.getElementById("answer").style.display = "none";
-                document.querySelector("button").style.display = "none";
+                document.querySelector("button[onclick='submitAnswer()']").style.display = "none";
+                document.getElementById("return-button").style.display = "block";
                 return null;
             }
             const randomIndex = Math.floor(Math.random() * questionQueue.length);
@@ -190,6 +197,15 @@
                 document.getElementById("feedback").innerText = "";
                 displayQuestion();
             }, 1500);
+        }
+
+        function returnToMain() {
+            document.getElementById("quiz-section").style.display = "none";
+            document.getElementById("chapter-selection").style.display = "block";
+            correctAnswers = 0;
+            questionQueue = [];
+            totalQuestions = 0;
+            updateProgress();
         }
     </script>
 </body>
