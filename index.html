@@ -39,9 +39,49 @@
         button:hover {
             background-color: #45a049;
         }
-        label {
-            display: block;
+        .custom-checkbox-wrapper {
+            display: flex;
+            align-items: center;
             margin-bottom: 10px;
+        }
+        .custom-checkbox {
+            position: relative;
+            width: 25px;
+            height: 25px;
+            border: 2px solid #4caf50;
+            border-radius: 5px;
+            margin-right: 10px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .custom-checkbox input {
+            opacity: 0;
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+        .custom-checkbox input:checked + .custom-checkbox-display {
+            background-color: #4caf50;
+        }
+        .custom-checkbox-display {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .custom-checkbox-display::after {
+            content: "\2713";
+            font-size: 18px;
+            color: white;
+            display: none;
+        }
+        .custom-checkbox input:checked + .custom-checkbox-display::after {
+            display: block;
         }
         #progress-text {
             margin-bottom: 10px;
@@ -74,22 +114,141 @@
             margin-top: 20px;
             display: none;
         }
+        .switch-container {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            gap: 20px;
+        }
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+            margin-right: 10px;
+        }
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        input:checked + .slider {
+            background-color: #4caf50;
+        }
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+        .dark-mode {
+            background-color: #333;
+            color: #f0f2f5;
+        }
+        .dark-mode #chapter-selection, .dark-mode #quiz-section {
+            background-color: #444;
+            color: #f0f2f5;
+        }
+        .dark-mode button {
+            background-color: #888;
+            color: #f0f2f5;
+        }
+        .dark-mode .slider {
+            background-color: #888;
+        }
+        .dark-mode input:checked + .slider {
+            background-color: #222;
+        }
     </style>
 </head>
 <body>
     <div id="chapter-selection">
         <h1>Fill in the Blanks Quiz</h1>
         <h3>Select Chapters:</h3>
-        <label><input type="checkbox" name="chapter" value="31"> Chapter 31</label>
-        <label><input type="checkbox" name="chapter" value="32"> Chapter 32</label>
-        <label><input type="checkbox" name="chapter" value="33"> Chapter 33</label>
-        <label><input type="checkbox" name="chapter" value="34"> Chapter 34</label>
-        <label><input type="checkbox" name="chapter" value="34"> Chapter 35</label>
-        <label><input type="checkbox" name="chapter" value="34"> Chapter 36</label>
-        <label><input type="checkbox" name="chapter" value="40"> Chapter 40</label>
+        <div class="custom-checkbox-wrapper">
+            <label class="custom-checkbox">
+                <input type="checkbox" name="chapter" value="31">
+                <div class="custom-checkbox-display"></div>
+            </label>
+            <span>Chapter 31</span>
+        </div>
+        <div class="custom-checkbox-wrapper">
+            <label class="custom-checkbox">
+                <input type="checkbox" name="chapter" value="32">
+                <div class="custom-checkbox-display"></div>
+            </label>
+            <span>Chapter 32</span>
+        </div>
+        <div class="custom-checkbox-wrapper">
+            <label class="custom-checkbox">
+                <input type="checkbox" name="chapter" value="33">
+                <div class="custom-checkbox-display"></div>
+            </label>
+            <span>Chapter 33</span>
+        </div>
+        <div class="custom-checkbox-wrapper">
+            <label class="custom-checkbox">
+                <input type="checkbox" name="chapter" value="34">
+                <div class="custom-checkbox-display"></div>
+            </label>
+            <span>Chapter 34</span>
+        </div>
+        <div class="custom-checkbox-wrapper">
+            <label class="custom-checkbox">
+                <input type="checkbox" name="chapter" value="35">
+                <div class="custom-checkbox-display"></div>
+            </label>
+            <span>Chapter 35</span>
+        </div>
+        <div class="custom-checkbox-wrapper">
+            <label class="custom-checkbox">
+                <input type="checkbox" name="chapter" value="36">
+                <div class="custom-checkbox-display"></div>
+            </label>
+            <span>Chapter 36</span>
+        </div>
+        <div class="custom-checkbox-wrapper">
+            <label class="custom-checkbox">
+                <input type="checkbox" name="chapter" value="40">
+                <div class="custom-checkbox-display"></div>
+            </label>
+            <span>Chapter 40</span>
+        </div>
+        <div class="switch-container">
+            <label class="switch">
+                <input type="checkbox" id="slow-mode" name="slow-mode">
+                <span class="slider"></span>
+            </label>
+            <span>Slow Mode</span>
+            <label class="switch">
+                <input type="checkbox" id="dark-mode-toggle" name="dark-mode">
+                <span class="slider"></span>
+            </label>
+            <span>Dark Mode</span>
+        </div>
         <button onclick="startQuiz()">Start Quiz</button>
     </div>
     <div id="quiz-section" style="display:none;">
+        <div id="chapter-title"></div>
         <div id="progress-text"></div>
         <div class="progress-bar">
             <div id="progress-bar-fill" class="progress-bar-fill"></div>
@@ -99,6 +258,7 @@
         <input type="text" id="answer" placeholder="Type your answer here" onkeydown="if (event.key === 'Enter') submitAnswer()">
         <button onclick="submitAnswer()">Submit</button>
         <div id="feedback"></div>
+        <button id="next-button" onclick="displayQuestion()" style="display: none;">Next Question</button>
         <button id="return-button" onclick="returnToMain()">Return to Main Menu</button>
     </div>
 
@@ -106,9 +266,12 @@
         let questionQueue = [];
         let correctAnswers = 0;
         let totalQuestions = 0;
+        let slowMode = false;
+        let selectedChapters = [];
 
         function startQuiz() {
-            const selectedChapters = Array.from(document.querySelectorAll('input[name="chapter"]:checked')).map(cb => parseInt(cb.value));
+            slowMode = document.getElementById('slow-mode').checked;
+            selectedChapters = Array.from(document.querySelectorAll('input[name="chapter"]:checked')).map(cb => parseInt(cb.value));
             loadQuestions(selectedChapters);
         }
 
@@ -131,6 +294,7 @@
 
                 document.getElementById("quiz-section").style.display = "block";
                 document.getElementById("chapter-selection").style.display = "none";
+                document.getElementById("chapter-title").innerText = `Selected Chapters: ${selectedChapters.join(', ')}`;
                 updateProgress();
                 displayQuestion();
             }).catch(error => {
@@ -179,6 +343,11 @@
             if (question) {
                 document.getElementById("question").innerText = question.sentence;
                 document.getElementById("translation").innerText = question.translation;
+                if (slowMode) {
+                    document.getElementById("next-button").style.display = "block";
+                } else {
+                    document.getElementById("next-button").style.display = "none";
+                }
             }
         }
 
@@ -195,10 +364,15 @@
             }
             updateProgress();
             document.getElementById("answer").value = "";
-            setTimeout(() => {
-                document.getElementById("feedback").innerText = "";
-                displayQuestion();
-            }, 1500);
+
+            if (slowMode) {
+                document.getElementById("feedback").innerText += " Click 'Next Question' to proceed.";
+            } else {
+                setTimeout(() => {
+                    document.getElementById("feedback").innerText = "";
+                    displayQuestion();
+                }, 1500);
+            }
         }
 
         function returnToMain() {
@@ -209,6 +383,14 @@
             totalQuestions = 0;
             updateProgress();
         }
+
+        document.getElementById('dark-mode-toggle').addEventListener('change', function() {
+            if (this.checked) {
+                document.body.classList.add('dark-mode');
+            } else {
+                document.body.classList.remove('dark-mode');
+            }
+        });
     </script>
 </body>
 </html>
