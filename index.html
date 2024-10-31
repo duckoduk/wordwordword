@@ -151,6 +151,43 @@
             width: 0;
             height: 0;
         }
+        .switch-wrapper {
+            position: relative;
+            display: inline-block;
+        }
+
+        .tooltip-text {
+            visibility: hidden;
+            width: 100px;
+            background-color: #4caf50;
+            color: #fff;
+            text-align: center;
+            border-radius: 5px;
+            padding: 5px;
+            position: absolute;
+            bottom: 125%; /* Position above the element */
+            left: 50%;
+            transform: translateX(-50%);
+            opacity: 0;
+            transition: opacity 0.3s;
+            z-index: 1;
+        }
+
+        .tooltip-text::after {
+            content: "";
+            position: absolute;
+            top: 100%; /* Arrow at the bottom of the tooltip */
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: #4caf50 transparent transparent transparent;
+        }
+
+        .switch-wrapper:hover .tooltip-text {
+            visibility: visible;
+            opacity: 1;
+        }
         .slider {
             position: absolute;
             cursor: pointer;
@@ -347,15 +384,21 @@
         </div>
         <br>
         <div class="switch-container">
-            <label class="switch">
-                <input type="checkbox" id="slow-mode" name="slow-mode">
-                <span class="slider"></span>
-            </label>
+            <div class="switch-wrapper">
+                <label class="switch">
+                    <input type="checkbox" id="slow-mode" name="slow-mode">
+                    <span class="slider"></span>
+                </label>
+                <span class="tooltip-text">하남자?</span>
+            </div>
             <span>Slow Mode</span>
-            <label class="switch">
-                <input type="checkbox" id="dark-mode-toggle" name="dark-mode">
-                <span class="slider"></span>
-            </label>
+            <div class="switch-wrapper">
+                <label class="switch">
+                    <input type="checkbox" id="dark-mode-toggle" name="dark-mode">
+                    <span class="slider"></span>
+                </label>
+                <span class="tooltip-text">눈 버려요😉</span>
+            </div>
             <span>Dark Mode</span>
         </div>
         <button onclick="startQuiz()">Start Quiz</button>
