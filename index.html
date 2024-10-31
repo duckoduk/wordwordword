@@ -9,6 +9,9 @@
         body {
             font-family: 'Roboto', sans-serif;
             background-color: #f0f2f5;
+            background-image: url('background.png'); /* Add your image URL here */
+            background-size: cover;
+            background-position: center;
             color: #333;
             display: flex;
             justify-content: center;
@@ -16,6 +19,17 @@
             height: 100vh;
             margin: 0;
         }
+        #banner {
+            width: 100%;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        #banner img {
+            width: 100%;
+            height: auto;
+            border-radius: 10px;
+        }
+
         h1 {
             color: #4caf50;
         }
@@ -182,7 +196,10 @@
 </head>
 <body>
     <div id="chapter-selection">
-        <h1>Fill in the Blanks Quiz</h1>
+        <!-- <h1>Fill in the Blanks Quiz</h1> -->
+        <div id="banner">
+            <img src="Banner.png" alt="Banner Image"> <!-- Replace 'banner-image.jpg' with your image URL -->
+        </div>
         <h3>Select Chapters:</h3>
         <div class="custom-checkbox-wrapper">
             <label class="custom-checkbox">
