@@ -492,12 +492,17 @@
                 <span class="tooltip-text">눈 버려요😉</span>
             </div>
             <span>Dark Mode</span>
+
+            <!-- <span id="timer-display">00:00</span> Display for the timer -->
         </div>
         <button onclick="startQuiz()">Start Quiz</button>
     </div>
     <div id="quiz-section" style="display:none;">
         <div id="chapter-title"></div>
         <div id="progress-text"></div>
+        <div class="timer-container">
+            <span id="timer-display">00:00</span>
+        </div>
         <div class="progress-bar">
             <div id="progress-bar-fill" class="progress-bar-fill"></div>
         </div>
@@ -521,10 +526,7 @@
             slowMode = document.getElementById('slow-mode').checked;
             selectedChapters = Array.from(document.querySelectorAll('input[name="chapter"]:checked')).map(cb => parseInt(cb.value));
             loadQuestions(selectedChapters);
-            document.getElementById("answer").style.display = "block";
-            document.querySelector("button[onclick='submitAnswer()']").style.display = "block";
-            document.getElementById("return-button").style.display = "none";
-
+            startTimer(); // Start the timer when the quiz starts
         }
 
         function loadQuestions(selectedChapters) {
@@ -573,11 +575,12 @@
 
         function getRandomQuestion() {
             if (questionQueue.length === 0) {
-                document.getElementById("question").innerText = "Quiz completed! Well done! \n \n Credit: 김부릉 백승우 \n Bug Finder: 최리아, 고재관";
+                document.getElementById("question").innerText = "Quiz completed! Well done!\nTime Taken: " + document.getElementById("timer-display").textContent;
                 document.getElementById("translation").innerText = "";
                 document.getElementById("answer").style.display = "none";
                 document.querySelector("button[onclick='submitAnswer()']").style.display = "none";
                 document.getElementById("return-button").style.display = "block";
+                stopTimer(); // Stop the timer when the quiz is completed
                 return null;
             }
             const randomIndex = Math.floor(Math.random() * questionQueue.length);
@@ -634,6 +637,10 @@
             questionQueue = [];
             totalQuestions = 0;
             updateProgress();
+            document.getElementById("return-button").style.display = "none";
+            document.getElementById("answer").style.display = "block";
+            document.querySelector("button[onclick='submitAnswer()']").style.display = "block";
+            stopTimer(); // Stop and reset the timer
         }
 
         document.getElementById('dark-mode-toggle').addEventListener('change', function() {
@@ -643,6 +650,33 @@
                 document.body.classList.remove('dark-mode');
             }
         });
+
+
+        let timerInterval;
+        let secondsElapsed = 0;
+            
+        function startTimer() {
+            const timerDisplay = document.getElementById("timer-display");
+            // Clear any existing interval to avoid overlap
+            clearInterval(timerInterval);
+            secondsElapsed = 0;  // Reset timer to zero
+            timerInterval = setInterval(() => {
+                secondsElapsed++;
+                const minutes = Math.floor(secondsElapsed / 60);
+                const seconds = secondsElapsed % 60;
+                timerDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            }, 1000);  // Update every 1000 milliseconds (1 second)
+        }
+
+        
+        function stopTimer() {
+            clearInterval(timerInterval);
+            secondsElapsed = 0;
+            document.getElementById("timer-display").textContent = "00:00";
+        }
+
+
+
     </script>
 </body>
 </html>
