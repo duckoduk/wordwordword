@@ -499,8 +499,6 @@
                 <span class="tooltip-text">눈 버려요😉</span>
             </div>
             <span>Dark Mode</span>
-
-            <!-- <span id="timer-display">00:00</span> Display for the timer -->
         </div>
         <button onclick="startQuiz()">Start Quiz</button>
     </div>
@@ -681,7 +679,16 @@
             secondsElapsed = 0;
             document.getElementById("timer-display").textContent = "00:00";
         }
-
+        // AJAX 요청을 사용하여 visitor_count.php에서 데이터를 가져옵니다.
+        fetch('visitor_count.php')
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('visitor-count').innerHTML = data;
+            })
+            .catch(error => {
+                console.error('오류 발생:', error);
+                document.getElementById('visitor-count').innerHTML = '접속자 수를 가져오는 데 실패했습니다.';
+            });
 
 
     </script>
