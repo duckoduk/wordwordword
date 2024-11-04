@@ -600,6 +600,8 @@
 
         function displayQuestion() {
             const question = getRandomQuestion();
+            document.getElementById("feedback").innerText = "";
+            document.getElementById("answer").value = "";
             if (question) {
                 document.getElementById("question").innerText = question.sentence;
                 document.getElementById("translation").innerText = question.translation;
@@ -620,13 +622,13 @@
                 questionQueue = questionQueue.filter(q => q.sentence !== currentQuestion.sentence);
                 document.getElementById("feedback").innerText = "Correct!";
             } else {
-                document.getElementById("feedback").innerText = `Wrong! Answer was: ${currentQuestion.answer}`;
+                document.getElementById("feedback").innerText = `Wrong! Answer was: ✨${currentQuestion.answer}✨`;
             }
             updateProgress();
             document.getElementById("answer").value = "";
 
             if (slowMode) {
-                document.getElementById("feedback").innerText += " Click 'Next Question' to proceed.";
+                document.getElementById("feedback").innerText += " \nClick 'Next Question' to proceed.";
             } else {
                 setTimeout(() => {
                     document.getElementById("feedback").innerText = "";
