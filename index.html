@@ -273,6 +273,42 @@
             /* text-decoration: none; */
             font-weight: bold;
         }
+        /* Slider styling */
+        #waittime-slider {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 100%;
+            height: 8px;
+            background: #ccc;
+            outline: none;
+            opacity: 0.9;
+            border-radius: 5px;
+            transition: opacity 0.2s;
+        }
+
+        #waittime-slider:hover {
+            opacity: 1;
+        }
+
+        #waittime-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #4caf50;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        #waittime-slider::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #4caf50;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
     </style>
 </head>
 <body>
@@ -496,6 +532,22 @@
 
         </div>
         <br>
+        <!-- Add slider section for adjusting waittime -->
+        <div id="slider-section" style="margin-top: 20px;">
+            <label for="waittime-slider" style="font-weight: bold;">Speed (ms): </label>
+            <div style="display: flex; align-items: center;">
+                <input 
+                    type="range" 
+                    id="waittime-slider" 
+                    min="500" 
+                    max="5000" 
+                    step="100" 
+                    value="1500"
+                    style="flex: 1; margin-right: 10px;"
+                >
+                <span id="waittime-display" style="font-weight: bold;">1500 ms</span>
+            </div>
+        </div>
         <div class="switch-container">
             <div class="switch-wrapper">
                 <label class="switch">
@@ -541,6 +593,7 @@
         let totalQuestions = 0;
         let slowMode = false;
         let selectedChapters = [];
+        let waittime = 1500;
 
         function startQuiz() {
             slowMode = document.getElementById('slow-mode').checked;
@@ -648,7 +701,7 @@
                 setTimeout(() => {
                     document.getElementById("feedback").innerText = "";
                     displayQuestion();
-                }, 1500);
+                }, waittime);
             }
         }
 
@@ -696,6 +749,20 @@
             secondsElapsed = 0;
             document.getElementById("timer-display").textContent = "00:00";
         }
+
+        // Initialize slider for waittime adjustment
+        const waittimeSlider = document.getElementById('waittime-slider');
+        const waittimeDisplay = document.getElementById('waittime-display');
+
+        // Set initial waittime value
+        waittime = parseInt(waittimeSlider.value, 10);
+
+        // Update waittime value on slider input
+        waittimeSlider.addEventListener('input', () => {
+            waittime = parseInt(waittimeSlider.value, 10);
+            waittimeDisplay.textContent = `${waittime} ms`;
+            console.log(`Waittime updated to: ${waittime} ms`);
+        });
 
 
     </script>
